@@ -2,10 +2,28 @@
 
 _Last updated: 1 September 2026_
 
-**Vox does not collect, store, transmit, sell or share any user data.**
+**Nothing Vox handles ever leaves your computer.** There is no account, no analytics, no
+telemetry, no advertising, and no server belonging to this extension. Vox cannot see what
+you read, and neither can its author.
 
-There is no account, no analytics, no telemetry, no advertising, and no server belonging to
-this extension. Nothing you read is sent anywhere.
+Chrome requires extensions to disclose the data they handle *even when it never leaves the
+device*, so this policy describes that handling plainly rather than claiming none happens.
+
+## What Vox handles, and where it stays
+
+**Website content.** When you ask Vox to read a page, it reads that page's text in order to
+speak it. The sentences are kept in your browser's session storage so a paused article
+resumes in the right place, and the audio generated from them is cached in your browser's
+local database so re-reading costs nothing. The session copy is discarded when you close the
+browser. The audio cache stores sound and a one-way hash of the sentence, never the sentence
+itself, and you can clear it at any time.
+
+**A right-click position.** Only if you switch on "Right-click → start reading from here".
+Chrome tells an extension *which* menu item was clicked but not *where* the pointer was, so a
+small listener records the coordinates of your last right-click, in the page, for a few
+seconds. It is a pair of numbers. It is never stored and never sent.
+
+None of this is readable by us or by anyone else, and removing the extension removes it.
 
 ## What Vox does with the pages you read
 

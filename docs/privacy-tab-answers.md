@@ -58,7 +58,24 @@ All executable code, including the ONNX Runtime WebAssembly, is contained in the
 
 ## Data usage
 
-Leave every data-type checkbox UNCHECKED, then tick all three certification boxes.
+Chrome requires disclosure even for data that never leaves the device, so this is not a
+"tick nothing" form.
+
+TICK:
+  - Website content
+  - User activity
+
+LEAVE UNCHECKED:
+  - Personally identifiable information
+  - Health information
+  - Financial and payment information
+  - Authentication information
+  - Personal communications
+  - Location
+  - Web history
+
+Then tick all three certification boxes under "I certify that the following disclosures
+are true".
 
 ## Privacy policy URL
 

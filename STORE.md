@@ -101,23 +101,31 @@ code. The CSP is `script-src 'self' 'wasm-unsafe-eval'`, which permits no remote
 
 ## Data usage disclosure
 
-Tick **nothing**. Vox collects no data of any kind.
+Chrome's policy is explicit that disclosure is required **even for data that never leaves the
+device**: *"Extensions are required to disclose how they handle user data, even when data is
+processed or stored locally on a user's device and is not transmitted to external servers or
+third parties."* "Handle" is defined as *"collecting, transmitting, using, or sharing."*
 
-| Question | Answer |
-| --- | --- |
-| Personally identifiable information | Not collected |
-| Health, financial, authentication, personal communications, location | Not collected |
-| Web history / user activity | Not collected. Page text is read into memory to be spoken and cached only in the user's own browser storage. It is never transmitted. |
-| Website content | Not collected in the store's sense — processed locally, never sent anywhere |
+So this is not a "tick nothing" listing, even though nothing is transmitted.
 
-Then certify all three: data is not sold, not used for unrelated purposes, and not used to
-determine creditworthiness.
+| Checkbox | Tick? | Why |
+| --- | --- | --- |
+| **Website content** | **Yes** | Vox reads the page's text to speak it, keeps the sentences in session storage to resume a paused article, and caches the generated audio locally. |
+| **User activity** | **Yes** | Only with the optional right-click feature enabled, but the form's own examples list "clicks, mouse position", and that is exactly what `anchor.js` records. |
+| Personally identifiable information | No | Never read or derived. |
+| Health, financial, authentication | No | Form fields and inputs are skipped during extraction. |
+| Personal communications | No | Vox has no special handling of mail or chat; whatever page you point it at is covered by "website content". |
+| Location | No | Never requested. |
+| Web history | No | No list of visited pages is built. One article title lives in session storage while it is being read, and is discarded on browser restart. |
 
-**Privacy policy URL** — required by the store even when nothing is collected. A short page
-stating "Vox collects, stores and transmits no user data. All speech synthesis happens on the
-user's device." is enough.
+Then tick **all three** certifications: not sold or transferred to third parties, not used
+for anything unrelated to the single purpose, not used for creditworthiness or lending. All
+three are true.
 
----
+The disclosures must agree with the privacy policy, which is why `PRIVACY.md` describes this
+handling explicitly rather than claiming none occurs.
+
+**Privacy policy URL** — `https://github.com/charanteja0017/vox-read-aloud/blob/main/PRIVACY.md`
 
 ## Assets
 

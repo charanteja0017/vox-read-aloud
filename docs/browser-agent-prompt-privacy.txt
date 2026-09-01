@@ -37,11 +37,9 @@ Requested only if the user turns on "Right-click, start reading from here", and 
    If, and only if, a justification box then appears, type exactly:
    All executable code, including the ONNX Runtime WebAssembly, is contained in the extension package. What is downloaded at runtime is neural network weights in ONNX format: data that the bundled runtime reads, never code that is executed. The content security policy is script-src 'self' 'wasm-unsafe-eval', which permits no remote script.
 
-4. DATA USAGE — this extension collects NO user data. Leave every data-type checkbox
-   UNCHECKED. Then tick all three certification checkboxes, which state that the data
-   usage complies with the Developer Program Policies, that data is not sold to third
-   parties, is not used or transferred for purposes unrelated to the item's single
-   purpose, and is not used to determine creditworthiness or for lending.
+4. DATA USAGE — tick exactly two boxes: "Website content" and "User activity".
+   Leave all seven others unchecked. Then tick all three certification checkboxes
+   under "I certify that the following disclosures are true".
 
 5. PRIVACY POLICY URL — type exactly:
 https://github.com/charanteja0017/vox-read-aloud/blob/main/PRIVACY.md

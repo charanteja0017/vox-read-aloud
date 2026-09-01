@@ -888,7 +888,6 @@
     return {
       source: options.anchor ? "point" : source,
       title: document.title || location.hostname,
-      url: location.href,
       startIndex: anchor.index,
       anchorFound: anchor.found,
       speakers,
