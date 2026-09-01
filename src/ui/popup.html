@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Vox</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <h1>Vox</h1>
+        <p class="tagline">On-device neural voice</p>
+      </div>
+    </div>
+    <div class="head-right">
+      <span id="rtfChip" class="chip hidden"></span>
+      <span id="statusPill" class="pill">Idle</span>
+    </div>
+  </header>
+
+  <div id="gpuBanner" class="banner hidden">
+    <div>
+      <b>This machine has a GPU that Vox isn't using.</b>
+      <span id="gpuBannerWhy">Speech is being generated on 6 CPU threads, which is what makes the laptop hot.</span>
+    </div>
+    <button id="gpuSwitch" class="btn btn-primary">Use the GPU · 310 MB</button>
+  </div>
+
+  <p id="toast" class="toast hidden"></p>
+
+  <main class="grid">
+    <section class="panel player">
+      <p class="label">Now reading</p>
+      <p id="docTitle" class="doc-title">Nothing yet</p>
+      <p id="cast" class="cast hidden"></p>
+      <p id="preview" class="preview">Press <kbd id="kbdRead">Cmd+Shift+U</kbd> on any page, or use Read this page.</p>
+      <p id="upNext" class="up-next hidden"></p>
+
+      <div id="scrub" class="scrub" role="slider" tabindex="0"
+           aria-label="Sentence position" aria-valuemin="1" aria-valuenow="1" aria-valuemax="1">
+        <div class="scrub-hit">
+          <div class="scrub-track">
+            <div id="scrubPrepared" class="scrub-prepared"></div>
+            <div id="scrubPlayed" class="scrub-played"></div>
+          </div>
+          <div id="scrubKnob" class="scrub-knob"></div>
+        </div>
+        <div id="scrubTip" class="scrub-tip hidden"><b id="scrubTipNum"></b><span id="scrubTipText"></span></div>
+      </div>
+
+      <div class="counters">
+        <span id="counter">—</span>
+        <span id="prepared" class="prepared"></span>
+      </div>
+
+      <div class="transport">
+        <button id="prevBtn" class="btn btn-ghost" title="Previous sentence" aria-label="Previous sentence">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 9 12l9 6V6ZM7 6h2v12H7z"/></svg>
+        </button>
+        <button id="playBtn" class="btn btn-play" title="Play / Pause" aria-label="Play or pause">
+          <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button id="nextBtn" class="btn btn-ghost" title="Next sentence" aria-label="Next sentence">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l9 6-9 6V6Zm11 0h2v12h-2z"/></svg>
+        </button>
+        <button id="stopBtn" class="btn btn-ghost" title="Stop" aria-label="Stop">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+        <button id="readBtn" class="btn btn-wide">Read this page</button>
+      </div>
+    </section>
+
+    <section class="panel side">
+      <div id="modelCard" class="model">
+        <div class="model-row">
+          <div>
+            <p class="model-title" id="modelTitle">Voice model not downloaded</p>
+            <p class="model-sub" id="modelSub">Kokoro-82M runs entirely on your machine.</p>
+          </div>
+          <button id="downloadBtn" class="btn btn-primary">Download</button>
+        </div>
+        <div id="progressWrap" class="progress hidden"><div id="progressBar" class="progress-bar"></div></div>
+        <div id="errorDetail" class="error-detail hidden"></div>
+      </div>
+
+      <label class="field">
+        <span>Voice</span>
+        <select id="voice"></select>
+      </label>
+
+      <label class="field">
+        <span>Speed <b id="speedValue">1.0×</b></span>
+        <input id="speed" type="range" min="0.6" max="2" step="0.05" value="1">
+      </label>
+
+      <label class="field">
+        <span>Model</span>
+        <select id="profile">
+          <option value="balanced">Balanced voice</option>
+          <option value="best">GPU voice</option>
+        </select>
+      </label>
+
+      <label class="toggle">
+        <input id="anchorToggle" type="checkbox">
+        <span class="toggle-text">
+          Right-click &rarr; start reading from here
+          <em>Lets Vox see where you right-click.</em>
+        </span>
+      </label>
+    </section>
+  </main>
+
+  <section id="transcript" class="transcript hidden" aria-label="Transcript"></section>
+
+  <footer class="foot">
+    <details class="shortcuts">
+      <summary>Keyboard shortcuts</summary>
+      <ul id="shortcutList"></ul>
+      <button id="editShortcuts" class="link">Change shortcuts…</button>
+    </details>
+    <span id="cacheInfo" class="cache-info"></span>
+  </footer>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

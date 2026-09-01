@@ -1,0 +1,24 @@
+{
+  "name": "vox-read-aloud",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome extension that reads pages aloud with an on-device neural TTS voice.",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "icons": "node tools/make-icons.mjs",
+    "test": "node tools/test-split.mjs && node tools/test-extract.mjs && node tools/test-scroll.mjs && node tools/test-anchor.mjs",
+    "test:e2e": "node tools/e2e.mjs",
+    "test:anchor": "node tools/test-anchor.mjs",
+    "test:scroll": "node tools/test-scroll.mjs",
+    "test:popup": "node tools/test-popup.mjs",
+    "test:quality": "node tools/test-quality.mjs",
+    "package": "node tools/package.mjs"
+  },
+  "dependencies": {
+    "esbuild": "^0.28.2",
+    "kokoro-js": "^1.2.1"
+  },
+  "license": "GPL-3.0-or-later"
+}
