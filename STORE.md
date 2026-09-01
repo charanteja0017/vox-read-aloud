@@ -25,6 +25,16 @@ unusual words.
 
 ---
 
+## The two URLs the form asks for
+
+| Field | Value |
+| --- | --- |
+| Homepage URL | `https://github.com/charanteja0017/vox-read-aloud` |
+| Privacy policy URL | `https://github.com/charanteja0017/vox-read-aloud/blob/main/PRIVACY.md` |
+
+The homepage doubles as the GPL's source-availability requirement, and it is also declared
+as `homepage_url` in the manifest so the source is findable from the extension itself.
+
 ## Listing
 
 **Name** — `Vox — Natural Read Aloud`
@@ -119,8 +129,8 @@ user's device." is enough.
 
 ## Pre-submission checklist
 
-- [ ] Source repository published, URL in the listing (required by the GPL)
-- [ ] Privacy policy page published, URL in the listing
+- [x] Source repository published — <https://github.com/charanteja0017/vox-read-aloud>
+- [x] Privacy policy published — `PRIVACY.md` in that repository
 - [ ] `npm test` and `npm run test:quality` pass
 - [ ] `npm run package` produces the archive without complaint
 - [ ] Loaded the unpacked archive once and confirmed it reads a page

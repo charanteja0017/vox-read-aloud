@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Reads any page aloud with a natural AI voice that runs entirely on your device. No cloud, no robotic speech.",
   "minimum_chrome_version": "116",
+  "homepage_url": "https://github.com/charanteja0017/vox-read-aloud",
 
   "permissions": [
     "activeTab",
