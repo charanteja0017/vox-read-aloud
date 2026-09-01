@@ -129,6 +129,18 @@ user's device." is enough.
 | Marquee promo tile | 1400×560 | `docs/store/promo-marquee-1400x560.png` |
 | Support URL | any public page | `…/vox-read-aloud/issues` |
 
+## Filling the forms
+
+Two prompts for a browser agent, if you want the typing done for you. Neither submits, and
+neither touches file uploads — an agent cannot drive a file picker.
+
+- [`docs/browser-agent-prompt.txt`](docs/browser-agent-prompt.txt) — the Store listing tab
+- [`docs/browser-agent-prompt-privacy.txt`](docs/browser-agent-prompt-privacy.txt) — the
+  Privacy practices tab, including every permission justification verbatim
+
+Check the remote-code answer yourself before saving. It must be **No**, and it is the field
+most likely to cause trouble if it is ever wrong.
+
 ## Pre-submission checklist
 
 - [x] Source repository published — <https://github.com/charanteja0017/vox-read-aloud>
@@ -136,4 +148,5 @@ user's device." is enough.
 - [ ] `npm test` and `npm run test:quality` pass
 - [ ] `npm run package` produces the archive without complaint
 - [ ] Loaded the unpacked archive once and confirmed it reads a page
+- [ ] Publisher contact email added **and verified** on the Settings page
 - [ ] Bumped `version` in `src/manifest.json` if resubmitting
