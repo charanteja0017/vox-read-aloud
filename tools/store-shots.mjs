@@ -215,6 +215,41 @@ async function composePopup(name, shotB64, caption) {
   console.log(`  ${name}`);
 }
 
+// Promo tiles. Optional in the form, but a listing without them looks unfinished
+// next to one that has them, and they cost nothing to produce.
+async function composeTile(name, w, h, scale) {
+  const icon = (await readFile("src/icons/icon128.png")).toString("base64");
+  const sid = await page("about:blank", w, h, 1);
+  const big = w > 600;
+  const html = `<!doctype html><html><head><meta charset="utf-8"><style>
+    html,body{margin:0;width:${w}px;height:${h}px;overflow:hidden;
+      font:400 15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    .t{position:relative;width:${w}px;height:${h}px;display:flex;align-items:center;
+      gap:${big ? 40 : 22}px;padding:0 ${big ? 84 : 34}px;box-sizing:border-box;
+      background:radial-gradient(110% 130% at 12% 0%,#232b3d 0%,#0b0d11 62%)}
+    .t::after{content:"";position:absolute;right:${big ? -120 : -70}px;top:50%;
+      width:${big ? 460 : 240}px;height:${big ? 460 : 240}px;transform:translateY(-50%);
+      border-radius:50%;background:radial-gradient(circle,rgba(255,213,74,.16),transparent 68%)}
+    img{width:${big ? 128 : 76}px;height:${big ? 128 : 76}px;border-radius:${big ? 30 : 18}px;flex:none;
+      box-shadow:0 12px 34px rgba(0,0,0,.5)}
+    .w{position:relative;z-index:1;min-width:0}
+    h1{margin:0;color:#fff;font-size:${big ? 62 : 34}px;line-height:1.05;font-weight:680;letter-spacing:-1px}
+    p{margin:${big ? 16 : 8}px 0 0;color:#c3cbd8;font-size:${big ? 25 : 14.5}px;line-height:1.35}
+    b{color:var(--a,#ffd54a);font-weight:600}
+  </style></head><body><div class="t">
+    <img src="data:image/png;base64,${icon}">
+    <div class="w"><h1>Vox</h1>
+    <p>Reads any page aloud in a <b>natural voice</b><br>that runs entirely on your device.</p></div>
+  </div></body></html>`;
+  await cdp("Page.navigate", { url: `data:text/html;charset=utf-8,${encodeURIComponent(html)}` }, sid);
+  await sleep(1000);
+  await writeFile(path.join(OUT, name), Buffer.from(await shot(sid), "base64"));
+  console.log(`  ${name}`);
+}
+
+await composeTile("promo-small-440x280.png", 440, 280);
+await composeTile("promo-marquee-1400x560.png", 1400, 560);
+
 await composePopup("03-move-around-the-page.png", popupShot,
   { title: "Scrub, skip, or jump to any sentence",
     sub: "A draggable position bar, the full transcript, and shortcuts for play, pause and skip." });

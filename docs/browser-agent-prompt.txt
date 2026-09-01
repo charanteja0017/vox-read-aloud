@@ -1,0 +1,41 @@
+You are filling in the Chrome Web Store "Store listing" form that is open in this tab.
+Fill ONLY the fields listed below. Do not upload any files. Do not click "Submit for
+review". Click "Save draft" when you are done, and then tell me which fields you filled.
+
+1. DESCRIPTION (the large "Description*" textarea) — type exactly this:
+
+Vox reads web pages aloud in a voice that sounds like a person, not a phone menu.
+
+The voice is a neural text-to-speech model — Kokoro-82M — that runs entirely on your own machine. Nothing you read is uploaded, and after the one-time model download it works offline.
+
+• A moving highlight follows the voice word by word, timed from the model itself rather than estimated, so your eye can run ahead or drop back in without losing the place.
+• Right-click anywhere in an article to start reading from that paragraph.
+• Dialogue and interview transcripts are read in more than one voice, with each speaker cast separately, and headings are read as section breaks.
+• Every sentence is synthesised once and cached, so seeking back or reopening an article later costs nothing and the laptop stays cool.
+• Twelve voices, American and British. Adjustable speed. Keyboard shortcuts for play, pause, skip and stop.
+• A draggable scrubber and a clickable transcript for moving around a long piece.
+
+Vox has no account, no telemetry and no server. The only network request it ever makes is downloading the voice model from Hugging Face the first time you use it.
+
+Open source, GPL-3.0: https://github.com/charanteja0017/vox-read-aloud
+
+2. CATEGORY (the "Category*" dropdown) — select "Accessibility".
+
+3. LANGUAGE (the "Language*" dropdown) — select "English" (choose "English (United States)"
+   if that is the only English option offered).
+
+4. HOMEPAGE URL (under "Additional fields") — type exactly:
+https://github.com/charanteja0017/vox-read-aloud
+
+5. SUPPORT URL (under "Additional fields") — type exactly:
+https://github.com/charanteja0017/vox-read-aloud/issues
+
+6. OFFICIAL URL — leave it as "None". Do not add a new site.
+
+7. MATURE CONTENT — leave the toggle OFF.
+
+8. GLOBAL PROMO VIDEO — leave empty.
+
+Do not touch the "Store icon", "Screenshots", "Small promo tile" or "Marquee promo tile"
+drop zones; those files are uploaded by hand. Do not open the Privacy, Package or
+Distribution tabs. When finished, click "Save draft".

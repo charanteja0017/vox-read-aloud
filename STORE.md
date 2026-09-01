@@ -125,7 +125,9 @@ user's device." is enough.
 | --- | --- | --- |
 | Store icon | 128×128 PNG | in package, `icons/icon128.png` |
 | Screenshots | 1280×800 or 640×400, PNG with **no alpha channel**, 1–5 | three in `docs/store/`, all verified 1280×800 8-bit RGB |
-| Small promo tile | 440×280 | optional |
+| Small promo tile | 440×280 | `docs/store/promo-small-440x280.png` |
+| Marquee promo tile | 1400×560 | `docs/store/promo-marquee-1400x560.png` |
+| Support URL | any public page | `…/vox-read-aloud/issues` |
 
 ## Pre-submission checklist
 
