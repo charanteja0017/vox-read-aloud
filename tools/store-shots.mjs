@@ -191,7 +191,32 @@ await compose("02-follows-every-word.png", articleShots.dark, null,
     sub: "Timing comes from the model itself, not a stopwatch — on light pages and dark." },
   230, "#151515");
 
-await writeFile(path.join(OUT, "03-popup.png"), Buffer.from(popupShot, "base64"));
-console.log("  03-popup.png (raw popup, for reference)");
+// A third frame for the popup on its own. The raw capture is 1560px wide and
+// therefore not a legal store size, so it gets composed like the others.
+async function composePopup(name, shotB64, caption) {
+  const sid = await page("about:blank", 1280, 800, 1);
+  const html = `<!doctype html><html><head><meta charset="utf-8"><style>
+    html,body{margin:0;width:1280px;height:800px;overflow:hidden;
+      font:400 15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    .wrap{position:relative;width:1280px;height:800px;
+      background:radial-gradient(120% 90% at 78% 8%,#1d2434 0%,#0b0d11 60%)}
+    .cap{position:absolute;left:64px;top:52px;color:#fff;max-width:900px}
+    .cap h2{margin:0;font-size:38px;line-height:1.14;font-weight:650;letter-spacing:-.5px}
+    .cap p{margin:11px 0 0;font-size:18px;color:#aab3c2}
+    .pop{position:absolute;left:50%;top:196px;transform:translateX(-50%);width:900px;
+      border-radius:15px;box-shadow:0 30px 78px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.09)}
+  </style></head><body><div class="wrap">
+    <div class="cap"><h2>${caption.title}</h2><p>${caption.sub}</p></div>
+    <img class="pop" src="data:image/png;base64,${shotB64}">
+  </div></body></html>`;
+  await cdp("Page.navigate", { url: `data:text/html;charset=utf-8,${encodeURIComponent(html)}` }, sid);
+  await sleep(1200);
+  await writeFile(path.join(OUT, name), Buffer.from(await shot(sid), "base64"));
+  console.log(`  ${name}`);
+}
+
+await composePopup("03-move-around-the-page.png", popupShot,
+  { title: "Scrub, skip, or jump to any sentence",
+    sub: "A draggable position bar, the full transcript, and shortcuts for play, pause and skip." });
 ws.close();
 chrome.kill("SIGKILL");

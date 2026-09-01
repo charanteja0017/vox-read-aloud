@@ -124,7 +124,7 @@ user's device." is enough.
 | Asset | Requirement | Status |
 | --- | --- | --- |
 | Store icon | 128×128 PNG | in package, `icons/icon128.png` |
-| Screenshots | 1280×800 or 640×400, 1–5 | `docs/store/` |
+| Screenshots | 1280×800 or 640×400, PNG with **no alpha channel**, 1–5 | three in `docs/store/`, all verified 1280×800 8-bit RGB |
 | Small promo tile | 440×280 | optional |
 
 ## Pre-submission checklist
