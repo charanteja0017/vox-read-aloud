@@ -18,8 +18,13 @@ published alongside it, which is what the licence requires.
 ## Kokoro-82M — Apache-2.0
 
 <https://huggingface.co/hexgrad/Kokoro-82M> · model weights by hexgrad, ONNX export by
-onnx-community. The voice embeddings under `voices/` are part of this release. The model
-weights themselves are downloaded at runtime rather than bundled.
+onnx-community. Apache-2.0 is declared on the original release and carried through both ONNX
+exports, including `onnx-community/Kokoro-82M-v1.0-ONNX-timestamped`, which is what Vox
+downloads. The voice embeddings under `voices/` come from the same release and are the only
+part bundled; the network weights are fetched at runtime.
+
+Kokoro's model card lists `yl4579/StyleTTS2-LJSpeech` as a base model, and that checkpoint
+declares no licence of its own. Vox relies on the licence Kokoro itself grants.
 
 ## kokoro-js — Apache-2.0
 
@@ -37,6 +42,17 @@ weights themselves are downloaded at runtime rather than bundled.
 ## phonemizer — Apache-2.0
 
 <https://github.com/xenova/phonemizer.js> · the wrapper around eSpeak NG noted above.
+
+## How these fit together
+
+Only eSpeak NG is copyleft. Apache-2.0 and MIT are both one-way compatible with the GPLv3,
+so combining them into a GPL-3.0 work is exactly what those licences permit — the result is
+coherent, and the obligation runs one way: the whole is GPL-3.0, while each component keeps
+its own terms. Note the compatibility is with GPL **v3** specifically; Apache-2.0 is not
+compatible with GPLv2, which is one reason this project is v3.
+
+**The speech model is not what makes Vox copyleft.** It is Apache-2.0 and is downloaded
+rather than bundled. The GPL comes from the phonemiser alone.
 
 ---
 
