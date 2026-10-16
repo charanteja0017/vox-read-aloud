@@ -104,6 +104,46 @@ async function activeTab() {
   return tab || null;
 }
 
+// Which frame holds the text to read. Selections and right-clicks inside an
+// iframe live in that frame's own document, invisible to the top frame, so ask
+// every frame what it has and go where the reader's attention is.
+async function pickFrame(tabId, options) {
+  let frames = [];
+  try {
+    frames = await chrome.scripting.executeScript({
+      target: { tabId, allFrames: true },
+      func: () => {
+        const sel = window.getSelection();
+        return {
+          selection: sel && !sel.isCollapsed ? sel.toString().trim().length : 0,
+          focused: document.hasFocus(),
+          anchorAt: window.__VOX_ANCHOR__?.at || 0,
+          text: (document.body?.innerText || "").trim().length,
+        };
+      },
+    });
+  } catch { return 0; }
+  const info = frames.filter((f) => f.result).map((f) => ({ frameId: f.frameId, ...f.result }));
+  if (!info.length) return 0;
+
+  if (options.fromAnchor) {
+    const latest = info.reduce((a, b) => (b.anchorAt > a.anchorAt ? b : a));
+    if (latest.anchorAt && Date.now() - latest.anchorAt < 30000) return latest.frameId;
+  } else {
+    const selected = info.filter((f) => f.selection > 1);
+    if (selected.length) {
+      return (selected.find((f) => f.focused) || selected.find((f) => f.frameId !== 0) || selected[0]).frameId;
+    }
+  }
+
+  // No selection: the top frame, unless it is a thin shell around an iframe
+  // that holds the actual content.
+  const top = info.find((f) => f.frameId === 0) || { text: 0 };
+  const biggest = info.filter((f) => f.frameId !== 0).reduce((a, b) => (b.text > (a?.text || 0) ? b : a), null);
+  if (biggest && biggest.text > 500 && biggest.text > top.text * 2) return biggest.frameId;
+  return 0;
+}
+
 async function readTab(tab, options = {}) {
   if (!tab || tab.id == null) return;
   if (tab.url && RESTRICTED.test(tab.url)) {
@@ -112,9 +152,11 @@ async function readTab(tab, options = {}) {
     return { started: false, reason };
   }
 
+  // Into every frame we may touch: the text can live in an iframe, and frames
+  // Vox has no access to are skipped rather than failing the whole call.
   try {
     await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
+      target: { tabId: tab.id, allFrames: true },
       files: ["content.js"],
     });
   } catch (err) {
@@ -124,13 +166,15 @@ async function readTab(tab, options = {}) {
     return { started: false, reason };
   }
 
+  const frameId = options.frameId ?? (await pickFrame(tab.id, options));
+
   let response;
   try {
     response = await chrome.tabs.sendMessage(tab.id, {
       to: "content",
       type: "EXTRACT",
       anchor: !!options.fromAnchor,
-    });
+    }, { frameId });
   } catch (err) {
     const reason = "Couldn't read this page.";
     toast(reason, true, tab.id);
@@ -150,7 +194,7 @@ async function readTab(tab, options = {}) {
   // never recorded. Install it now so the next one works, and say so.
   if (options.fromAnchor && !anchorFound) {
     chrome.scripting
-      .executeScript({ target: { tabId: tab.id }, files: ["anchor.js"] })
+      .executeScript({ target: { tabId: tab.id, allFrames: true }, files: ["anchor.js"] })
       .catch(() => {});
     toast("Vox wasn't watching this page yet — reading from the top. Right-click again to start from a specific spot.", false, tab.id);
   }
@@ -160,7 +204,7 @@ async function readTab(tab, options = {}) {
     return { started: false, reason };
   }
 
-  const sent = await toEngine("SPEAK", { chunks, title, source, tabId: tab.id, startIndex, speakers });
+  const sent = await toEngine("SPEAK", { chunks, title, source, tabId: tab.id, frameId, startIndex, speakers });
   if (!sent) {
     const reason = "The speech engine didn't respond. Try again.";
     toast(reason, true, tab.id);
@@ -230,11 +274,12 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       );
       return;
     }
-    readTab(tab, { fromAnchor: true });
+    readTab(tab, { fromAnchor: true, frameId: info.frameId });
     return;
   }
+  // info.frameId is the frame that was right-clicked, which may be an iframe.
   if (info.menuItemId === "vox-read-selection" || info.menuItemId === "vox-read-page") {
-    readTab(tab);
+    readTab(tab, { frameId: info.frameId });
   }
 });
 
@@ -248,7 +293,10 @@ const ANCHOR_SCRIPT = {
   js: ["anchor.js"],
   matches: ["<all_urls>"],
   runAt: "document_start",
-  allFrames: false,
+  // Right-clicks inside iframes, including srcdoc and sandboxed ones whose
+  // origin is only inherited from the page that embeds them.
+  allFrames: true,
+  matchOriginAsFallback: true,
   persistAcrossSessions: true,
 };
 
@@ -265,6 +313,8 @@ async function syncAnchorScript() {
 
   try {
     if (granted && !registered.length) await chrome.scripting.registerContentScripts([ANCHOR_SCRIPT]);
+    // A registration from an older version keeps its old options until updated.
+    else if (granted) await chrome.scripting.updateContentScripts([ANCHOR_SCRIPT]);
     else if (!granted && registered.length) await chrome.scripting.unregisterContentScripts({ ids: ["vox-anchor"] });
   } catch (err) {
     console.warn("[vox] could not sync the anchor script", err);
@@ -280,7 +330,7 @@ async function primeOpenTabs() {
   await Promise.all(tabs.map((tab) => {
     if (tab.id == null || !tab.url || RESTRICTED.test(tab.url)) return null;
     return chrome.scripting
-      .executeScript({ target: { tabId: tab.id }, files: ["anchor.js"] })
+      .executeScript({ target: { tabId: tab.id, allFrames: true }, files: ["anchor.js"] })
       .catch(() => {});
   }));
 }
@@ -318,15 +368,17 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       paintBadge(msg.state);
       return false;
 
+    // Always to the one frame being read: without a frameId the message would
+    // reach every frame that has content.js, and each would try to highlight.
     case "HIGHLIGHT":
       chrome.tabs
-        .sendMessage(msg.tabId, { to: "content", type: "HIGHLIGHT", index: msg.index })
+        .sendMessage(msg.tabId, { to: "content", type: "HIGHLIGHT", index: msg.index }, { frameId: msg.frameId ?? 0 })
         .catch(() => {});
       return false;
 
     case "CLEAR":
       chrome.tabs
-        .sendMessage(msg.tabId, { to: "content", type: "CLEAR" })
+        .sendMessage(msg.tabId, { to: "content", type: "CLEAR" }, { frameId: msg.frameId ?? 0 })
         .catch(() => {});
       return false;
 
@@ -339,13 +391,13 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
           words: msg.words,
           duration: msg.duration,
           paused: msg.paused,
-        })
+        }, { frameId: msg.frameId ?? 0 })
         .catch(() => {});
       return false;
 
     case "PAGE":
       chrome.tabs
-        .sendMessage(msg.tabId, { to: "content", type: msg.action })
+        .sendMessage(msg.tabId, { to: "content", type: msg.action }, { frameId: msg.frameId ?? 0 })
         .catch(() => {});
       return false;
 

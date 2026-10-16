@@ -8,10 +8,11 @@
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",
     "icons": "node tools/make-icons.mjs",
-    "test": "node tools/test-split.mjs && node tools/test-extract.mjs && node tools/test-scroll.mjs && node tools/test-anchor.mjs",
+    "test": "node tools/test-split.mjs && node tools/test-extract.mjs && node tools/test-scroll.mjs && node tools/test-anchor.mjs && node tools/test-frames.mjs",
     "test:e2e": "node tools/e2e.mjs",
     "test:anchor": "node tools/test-anchor.mjs",
-    "test:scroll": "node tools/test-scroll.mjs",
+    "test:frames": "node tools/test-frames.mjs",
+    "test:scroll":"node tools/test-scroll.mjs",
     "test:popup": "node tools/test-popup.mjs",
     "test:quality": "node tools/test-quality.mjs",
     "package": "node tools/package.mjs"

@@ -3,7 +3,7 @@
   "name": "Vox — Natural Read Aloud",
   "version": "1.0.0",
   "description": "Reads any page aloud with a natural AI voice that runs entirely on your device. No cloud, no robotic speech.",
-  "minimum_chrome_version": "116",
+  "minimum_chrome_version": "119",
   "homepage_url": "https://github.com/charanteja0017/vox-read-aloud",
 
   "permissions": [
@@ -20,7 +20,8 @@
   "host_permissions": [
     "https://huggingface.co/*",
     "https://*.huggingface.co/*",
-    "https://*.hf.co/*"
+    "https://*.hf.co/*",
+    "https://*.claudeusercontent.com/*"
   ],
 
   "background": {

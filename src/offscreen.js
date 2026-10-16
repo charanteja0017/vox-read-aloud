@@ -42,6 +42,9 @@ let loadPromise = null;
 let modelReady = false;
 let chunks = [];
 let tabId = null;
+// The text may live in an iframe (claude.ai artifacts render into a srcdoc
+// frame), and every highlight has to reach that same frame.
+let frameId = 0;
 let epoch = 0;             // bumped on every stop/seek/param change
 let genChain = Promise.resolve();
 const audioCache = new Map();
@@ -167,6 +170,7 @@ function saveSession({ full = false } = {}) {
   saveTimer = setTimeout(() => {
     const session = {
       tabId,
+      frameId,
       index: state.index,
       title: state.title,
       source: state.source,
@@ -186,6 +190,7 @@ async function restoreSession() {
   if (!saved || !saved.chunks?.length) return;
   chunks = saved.chunks;
   tabId = saved.tabId ?? null;
+  frameId = saved.frameId ?? 0;
   Object.assign(state, {
     index: Math.min(saved.index || 0, saved.chunks.length - 1),
     total: saved.chunks.length,
@@ -680,7 +685,7 @@ async function runFrom(startIndex) {
       chunkPreview: chunks[i].text,
     });
     saveSession();
-    if (tabId != null) post({ to: "bg", type: "HIGHLIGHT", tabId, index: i });
+    if (tabId != null) post({ to: "bg", type: "HIGHLIGHT", tabId, frameId, index: i });
 
     let clip;
     try {
@@ -706,6 +711,7 @@ async function runFrom(startIndex) {
         to: "bg",
         type: "SPEAK_CHUNK",
         tabId,
+        frameId,
         index: i,
         words: clip.words,
         duration: clip.duration,
@@ -726,13 +732,13 @@ function finish() {
   if (audioCtx) audioCtx.suspend().catch(() => {});
   pushState({ status: "ready", index: chunks.length ? chunks.length - 1 : 0, chunkPreview: "" });
   saveSession();
-  if (tabId != null) post({ to: "bg", type: "CLEAR", tabId });
+  if (tabId != null) post({ to: "bg", type: "CLEAR", tabId, frameId });
 }
 
 /* --------------------------------------------------------------- commands */
 
 function tellPage(type) {
-  if (tabId != null) post({ to: "bg", type: "PAGE", tabId, action: type });
+  if (tabId != null) post({ to: "bg", type: "PAGE", tabId, frameId, action: type });
 }
 
 function start(index) {
@@ -742,7 +748,7 @@ function start(index) {
   });
 }
 
-async function speak({ chunks: incoming, title, source, tabId: fromTab, startIndex = 0, speakers = [] }) {
+async function speak({ chunks: incoming, title, source, tabId: fromTab, frameId: fromFrame = 0, startIndex = 0, speakers = [] }) {
   epoch++;
   stopSource();
   audioCache.clear();
@@ -752,6 +758,7 @@ async function speak({ chunks: incoming, title, source, tabId: fromTab, startInd
   rendered.clear();
   state.renderedMask = "";
   tabId = fromTab ?? null;
+  frameId = fromFrame;
   const from = Math.min(Math.max(startIndex | 0, 0), Math.max(chunks.length - 1, 0));
   pushState({
     title: title || "",
@@ -805,7 +812,7 @@ function stop() {
   if (audioCtx) audioCtx.suspend().catch(() => {});
   pushState({ status: "ready", index: 0, chunkPreview: "" });
   saveSession();
-  if (tabId != null) post({ to: "bg", type: "CLEAR", tabId });
+  if (tabId != null) post({ to: "bg", type: "CLEAR", tabId, frameId });
 }
 
 function seek(delta, absolute) {
